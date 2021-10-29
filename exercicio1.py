@@ -23,14 +23,6 @@ Um exemplo de resolução:
 'endereço': 'Estrada Girassol',
 'CEP': 1549431}]
 
-exemplo = {'usuarios': [{'nome completo': 'Matheus Esteque',
-                         'Estado': 'Roraima',
-                         'email': 'Matheus.Esteque@gmail.com',
-                         'cursos': ['Pascal', 'JavaScript', 'C', 'Assembly', 'C++', 'Rusty'],
-                         'phone': 981972367,
-                         'endereço': 'Estrada Girassol',
-                         'CEP': 1549431}]}
-
 resposta esperada:
 [{'nome completo': 'Matheus Esteque',
 'Estado': 'RR',
@@ -84,7 +76,11 @@ def exemplo_v1():
             exemplo['usuarios'][0][k] = None
 
     # colocando o email em letras minúsculas
-    exemplo['usuarios'][0]['email'] = exemplo['usuarios'][0]['email'].lower()
+    if exemplo['usuarios'][0]['email'] is None:
+        exemplo['usuarios'][0]['email'] = \
+            exemplo['usuarios'][0]['nome completo'].lower().replace(' ', '') + '@gmail.com'
+    else:
+        exemplo['usuarios'][0]['email'] = exemplo['usuarios'][0]['email'].lower()
 
     # trocando os nomes dos estados para suas siglas, que estão no dicionário siglas_estados
     for k, v in sigla_estados.items():  # percorre os pares de sigla_estados
@@ -111,6 +107,8 @@ def exemplo_v1():
 
     exemplo['usuarios'][0].update({'cursos': cursos_novo})  # colocando esse dicionário como valor da chave 'cursos'
 
+    print(exemplo)
+
 
 def oficial():
     """
@@ -121,47 +119,46 @@ def oficial():
     """
 
 
-"""
-Antes eu estava fazendo apenas para o valor 0 da lista de usuários, agora vamos
-iterar sobre toda a lista, colocando um i onde tínhamos 0 e indo até
-o tamanho total dessa lista.
-"""
-for i in range(len(response['usuarios'])):
-    response['usuarios'][i]['email'] = response['usuarios'][i]['email'].lower()
-
     """
-    descobri que tem que colocar o email pra minúsculo antes de mudar pra None
-    pois o none não aceita o lower()
-    
+    Antes eu estava fazendo apenas para o valor 0 da lista de usuários, agora vamos
+    iterar sobre toda a lista, colocando um i onde tínhamos 0 e indo até
+    o tamanho total dessa lista.
     """
-    for k, v in response['usuarios'][i].items():
-        if v == 'desconhecido':
-            response['usuarios'][i][k] = None
+    for i in range(len(response['usuarios'])):
 
-    for k, v in sigla_estados.items():
-        if response['usuarios'][i]['Estado'] == k:
-            response['usuarios'][i]['Estado'] = v
+        for k, v in response['usuarios'][i].items():
+            if v == 'desconhecido':
+                response['usuarios'][i][k] = None
 
-    cursos_novo = {'Quantidade de cursos': len(response['usuarios'][i]['cursos']),
-                   'Aluno Aplicado': None,
-                   'Aluno da melhor professora': None,
-                   'cursos do aluno': response['usuarios'][i]['cursos'], }
+        if response['usuarios'][i]['email'] is None:
+            response['usuarios'][i]['email'] = \
+                response['usuarios'][i]['nome completo'].lower().replace(' ', '') + '@gmail.com'
+        else:
+            response['usuarios'][i]['email'] = response['usuarios'][i]['email'].lower()
 
-    if cursos_novo['Quantidade de cursos'] > 2:  # condição para Aluno Aplicado
-        cursos_novo['Aluno Aplicado'] = True
-    else:
-        cursos_novo['Aluno Aplicado'] = False
+        for k, v in sigla_estados.items():
+            if response['usuarios'][i]['Estado'] == k:
+                response['usuarios'][i]['Estado'] = v
 
-    for index, c in enumerate(cursos_novo['cursos do aluno']):  # condições sobre Python
-        if c == 'A melhor linguagem do mundo':
-            cursos_novo['cursos do aluno'][index] = 'Python'
+        cursos_novo = {'Quantidade de cursos': len(response['usuarios'][i]['cursos']),
+                       'Aluno Aplicado': None,
+                       'Aluno da melhor professora': None,
+                       'cursos do aluno': response['usuarios'][i]['cursos'], }
 
-        cursos_novo['Aluno da melhor professora'] = True if 'Python' in cursos_novo['cursos do aluno'] else False
+        if cursos_novo['Quantidade de cursos'] > 2:  # condição para Aluno Aplicado
+            cursos_novo['Aluno Aplicado'] = True
+        else:
+            cursos_novo['Aluno Aplicado'] = False
 
-    response['usuarios'][i].update({'cursos': cursos_novo})
+        for index, c in enumerate(cursos_novo['cursos do aluno']):  # condições sobre Python
+            if c == 'A melhor linguagem do mundo':
+                cursos_novo['cursos do aluno'][index] = 'Python'
 
+            cursos_novo['Aluno da melhor professora'] = True if 'Python' in cursos_novo['cursos do aluno'] else False
 
-print(response)  # está printando na tela o resultado, se quiser ver de outro jeito modificar aqui!
+        response['usuarios'][i].update({'cursos': cursos_novo})
+
+    print(response)  # está printando na tela o resultado, se quiser ver de outro jeito modificar aqui!
 
 
 def main():
